@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 88768f084f80acd4999a71f262e835db
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _footstepPrefab: {fileID: 2337839295505649469, guid: a3e431d3d4530304ca0946c1341c3ad4,
+      type: 3}
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: dc3c35513efc7e6408c1cd524b09a39f, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
