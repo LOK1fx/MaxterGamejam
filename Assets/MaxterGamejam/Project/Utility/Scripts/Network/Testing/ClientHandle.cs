@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 namespace LOK1game.Tools.Networking
@@ -15,6 +16,17 @@ namespace LOK1game.Tools.Networking
             ClientSend.WelcomeReceived();
 
             Debug.Log(message);
+
+            Client.Instance.Udp.Connect(((IPEndPoint)Client.Instance.Tcp.Socket.Client.LocalEndPoint).Port);
+        }
+
+        public static void UDPTest(Packet packet)
+        {
+            var message = packet.ReadString();
+
+            Debug.Log(message);
+
+            ClientSend.UDPTestReceived();
         }
     }
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
   sprintGoundAccelerate: 80
   airAccelerate: 18
   jumpForce: 38
-  friction: 7
+  friction: 9
   walkGroundMaxVelocity: 7
   crouchGroundMaxVelocity: 4
   sprintGoundMaxVelocity: 8.6

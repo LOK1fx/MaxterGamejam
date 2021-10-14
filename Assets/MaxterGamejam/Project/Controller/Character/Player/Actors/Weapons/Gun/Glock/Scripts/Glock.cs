@@ -20,7 +20,7 @@ namespace com.LOK1game.MaxterGamejam
             base.Shoot();
 
             transform.Rotate(Vector3.right, -15f);
-            _animator.Play("Shoot");
+            _animator.Play("Shoot", 0, 0);
         }
     }
 }

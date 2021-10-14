@@ -7,7 +7,7 @@ namespace com.LOK1game.MaxterGamejam
     [RequireComponent(typeof(LineRenderer))]
     public class BulletTrail : MonoBehaviour
     {
-        private readonly float _speed = 15f;
+        [SerializeField] private float _speed = 15f;
 
         private LineRenderer _trail;
 

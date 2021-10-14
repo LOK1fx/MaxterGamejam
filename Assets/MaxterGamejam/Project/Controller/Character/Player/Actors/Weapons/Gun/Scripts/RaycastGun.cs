@@ -40,15 +40,24 @@ namespace com.LOK1game.MaxterGamejam
                     Impact(hit);
                 }
 
-                if(_trailPrefab != null && firePoint != null)
-                {
-                    var trail = Instantiate(_trailPrefab);
+                SpawnTrail(hit.point);
+            }
+            else
+            {
+                SpawnTrail(origin.position + origin.forward * 1000f);
+            }
+        }
 
-                    trail.SetPosition(0, firePoint.position);
-                    trail.SetPosition(1, hit.point);
+        private void SpawnTrail(Vector3 endPoint)
+        {
+            if (_trailPrefab != null && firePoint != null)
+            {
+                var trail = Instantiate(_trailPrefab);
 
-                    Destroy(trail.gameObject, 0.11f);
-                }
+                trail.SetPosition(0, firePoint.position);
+                trail.SetPosition(1, endPoint);
+
+                Destroy(trail.gameObject, 0.2f);
             }
         }
 

@@ -175,7 +175,7 @@ namespace com.LOK1game.recode.Player
 
             var dirOffset = Vector3.ClampMagnitude(velocity, 1f);
 
-            MoveCamera.Instance.lerpOffset += dirOffset * 0.25f;
+            MoveCamera.Instance.lerpOffset += dirOffset * 0.35f;
 
             OnLand?.Invoke();
         }

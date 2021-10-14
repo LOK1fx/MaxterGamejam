@@ -4943,7 +4943,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 8131525081427610703}
   baseFov: 80
-  maxFov: 100
+  maxFov: 90
   currentFov: 0
   smooth: 8
 --- !u!1 &8131525081427610691

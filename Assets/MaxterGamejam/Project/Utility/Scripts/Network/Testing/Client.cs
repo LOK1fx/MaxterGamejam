@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace LOK1game.Tools.Networking
         public int Port = 9600;
         public int LocalId = 0;
         public TCP Tcp;
+        public UDP Udp;
 
         private delegate void PacketHandler(Packet packet);
         private static Dictionary<int, PacketHandler> _packetHandlers;
@@ -35,6 +37,7 @@ namespace LOK1game.Tools.Networking
         private void Start()
         {
             Tcp = new TCP();
+            Udp = new UDP();
         }
 
         private void Update() //test
@@ -48,7 +51,9 @@ namespace LOK1game.Tools.Networking
         public void ConnectToServer()
         {
             InitializeClientData();
+
             Tcp.Connect();
+            Udp.Connect(Port);
         }
 
         public class TCP
@@ -175,11 +180,94 @@ namespace LOK1game.Tools.Networking
             }
         }
 
+        public class UDP
+        {
+            public UdpClient Socket;
+            public IPEndPoint EndPoint;
+
+            public UDP()
+            {
+                EndPoint = new IPEndPoint(IPAddress.Parse(Instance.Ip), Instance.Port);
+            }
+
+            public void Connect(int localPort)
+            {
+                Socket = new UdpClient(localPort);
+
+                Socket.Connect(EndPoint);
+                Socket.BeginReceive(ReceiveCallback, null);
+
+                using(Packet packet = new Packet())
+                {
+                    SendData(packet);
+                }
+            }
+
+            public void SendData(Packet packet)
+            {
+                try
+                {
+                    packet.InsertInt(Instance.LocalId);
+
+                    if(Socket != null)
+                    {
+                        Socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogError($"Error sending data to server via UPD: {exception}");
+                }
+            }
+
+            private void ReceiveCallback(IAsyncResult result)
+            {
+                try
+                {
+                    var data = Socket.EndReceive(result, ref EndPoint);
+
+                    Socket.BeginReceive(ReceiveCallback, null);
+
+                    if(data.Length < 4)
+                    {
+                        return;
+                    }
+
+                    HandleData(data);
+                }
+                catch
+                {
+
+                }
+            }
+
+            private void HandleData(byte[] data)
+            {
+                using(Packet packet = new Packet(data))
+                {
+                    var packetLength = packet.ReadInt();
+
+                    data = packet.ReadBytes(packetLength);
+                }
+
+                ThreadManager.ExecuteOnMainThread(() =>
+                {
+                    using(Packet packet = new Packet(data))
+                    {
+                        var packetId = packet.ReadInt();
+
+                        _packetHandlers[packetId](packet);
+                    }
+                });
+            }
+        }
+
         private void InitializeClientData()
         {
             _packetHandlers = new Dictionary<int, PacketHandler>()
             {
-                { (int)ServerPackets.Welcome, ClientHandle.Welcome }
+                { (int)ServerPackets.Welcome, ClientHandle.Welcome },
+                { (int)ServerPackets.UdpTest, ClientHandle.UDPTest }
             };
 
             Debug.Log("Packets are initialezed");

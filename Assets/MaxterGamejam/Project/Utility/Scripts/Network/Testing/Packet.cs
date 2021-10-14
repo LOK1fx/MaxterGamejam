@@ -7,13 +7,15 @@ namespace LOK1game.Tools.Networking
     /// <summary>Sent from server to client.</summary>
     public enum ServerPackets
     {
-        Welcome = 1
+        Welcome = 1,
+        UdpTest
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
-        WelcomeReceived = 1
+        WelcomeReceived = 1,
+        UdpTestReceived
     }
 
     public class Packet : IDisposable
