@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace LOK1game.Tools.Networking
 {
@@ -8,14 +9,16 @@ namespace LOK1game.Tools.Networking
     public enum ServerPackets
     {
         Welcome = 1,
-        UdpTest
+        SpawnPlayer,
+        PlayerPosition,
+        PlayerRotation
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         WelcomeReceived = 1,
-        UdpTestReceived
+        PlayerMovement
     }
 
     public class Packet : IDisposable
@@ -158,6 +161,23 @@ namespace LOK1game.Tools.Networking
         {
             Write(value.Length); // Add the length of the string to the packet
             _buffer.AddRange(Encoding.ASCII.GetBytes(value)); // Add the string itself
+        }
+        /// <summary>Adds a Vector3 to the packet.</summary>
+        /// <param name="value">The Vector3 to add.</param>
+        public void Write(Vector3 value)
+        {
+            Write(value.x);
+            Write(value.y);
+            Write(value.z);
+        }
+        /// <summary>Adds a Quaternion to the packet.</summary>
+        /// <param name="value">The Quaternion to add.</param>
+        public void Write(Quaternion value)
+        {
+            Write(value.x);
+            Write(value.y);
+            Write(value.z);
+            Write(value.w);
         }
         #endregion
 
@@ -329,6 +349,16 @@ namespace LOK1game.Tools.Networking
             {
                 throw new Exception("Could not read value of type 'string'!");
             }
+        }
+
+        public Vector3 ReadVector3(bool moveReadPos = true)
+        {
+            return new Vector3(ReadFloat(moveReadPos), ReadFloat(moveReadPos), ReadFloat(moveReadPos));
+        }
+
+        public Quaternion ReadQuaternion(bool moveReadPos = true)
+        {
+            return new Quaternion(ReadFloat(moveReadPos), ReadFloat(moveReadPos), ReadFloat(moveReadPos), ReadFloat(moveReadPos));
         }
         #endregion
 

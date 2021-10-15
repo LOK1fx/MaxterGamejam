@@ -11,6 +11,10 @@ namespace LOK1game.Tools.Networking
         public static Client Instance;
         public static int DataBufferSize = 4096;
 
+        public long Tick;
+
+        public bool IsConnected = false;
+
         public string Ip = "127.0.0.1"; //Local ip
         public int Port = 9600;
         public int LocalId = 0;
@@ -46,14 +50,31 @@ namespace LOK1game.Tools.Networking
             {
                 ConnectToServer();
             }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                Udp.Socket.Close();
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            Tick++;
+
+            Debug.Log(Tick);
+        }
+
+        private void OnApplicationQuit()
+        {
+            Disconnect();
         }
 
         public void ConnectToServer()
         {
             InitializeClientData();
 
+            IsConnected = true;
+
             Tcp.Connect();
-            Udp.Connect(Port);
         }
 
         public class TCP
@@ -74,6 +95,16 @@ namespace LOK1game.Tools.Networking
 
                 _receiveBuffer = new byte[DataBufferSize];
                 Socket.BeginConnect(Instance.Ip, Instance.Port, OnConnectCallback, Socket);
+            }
+
+            public void Disconnect()
+            {
+                Instance.Disconnect();
+
+                _stream = null;
+                _receivedData = null;
+                _receiveBuffer = null;
+                Socket = null;
             }
 
             public void SendData(Packet packet)
@@ -113,6 +144,8 @@ namespace LOK1game.Tools.Networking
 
                     if (byteLength <= 0)
                     {
+                        Instance.Disconnect();
+
                         return;
                     }
 
@@ -126,6 +159,8 @@ namespace LOK1game.Tools.Networking
                 catch (Exception exception)
                 {
                     Console.WriteLine($"Error! Receiving TCP Data Error: {exception}");
+
+                    Disconnect();
                 }
             }
 
@@ -203,20 +238,27 @@ namespace LOK1game.Tools.Networking
                 }
             }
 
+            public void Disconnect()
+            {
+                Instance.Disconnect();
+
+                EndPoint = null;
+                Socket = null;
+            }
+
             public void SendData(Packet packet)
             {
                 try
                 {
                     packet.InsertInt(Instance.LocalId);
-
-                    if(Socket != null)
+                    if (Socket != null)
                     {
                         Socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
                     }
                 }
-                catch (Exception exception)
+                catch (Exception _ex)
                 {
-                    Debug.LogError($"Error sending data to server via UPD: {exception}");
+                    Debug.Log($"Error sending data to server via UDP: {_ex}");
                 }
             }
 
@@ -230,6 +272,8 @@ namespace LOK1game.Tools.Networking
 
                     if(data.Length < 4)
                     {
+                        Instance.Disconnect();
+
                         return;
                     }
 
@@ -237,25 +281,23 @@ namespace LOK1game.Tools.Networking
                 }
                 catch
                 {
-
+                    Disconnect();
                 }
             }
 
             private void HandleData(byte[] data)
             {
-                using(Packet packet = new Packet(data))
+                using (Packet packet = new Packet(data))
                 {
                     var packetLength = packet.ReadInt();
-
                     data = packet.ReadBytes(packetLength);
                 }
 
                 ThreadManager.ExecuteOnMainThread(() =>
                 {
-                    using(Packet packet = new Packet(data))
+                    using (Packet packet = new Packet(data))
                     {
                         var packetId = packet.ReadInt();
-
                         _packetHandlers[packetId](packet);
                     }
                 });
@@ -267,10 +309,25 @@ namespace LOK1game.Tools.Networking
             _packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ServerPackets.Welcome, ClientHandle.Welcome },
-                { (int)ServerPackets.UdpTest, ClientHandle.UDPTest }
+                { (int)ServerPackets.SpawnPlayer, ClientHandle.SpawnPlayer },
+                { (int)ServerPackets.PlayerPosition, ClientHandle.PlayerPosition },
+                { (int)ServerPackets.PlayerRotation, ClientHandle.PlayerRotation }
             };
 
             Debug.Log("Packets are initialezed");
+        }
+
+        private void Disconnect()
+        {
+            if(IsConnected)
+            {
+                IsConnected = false;
+
+                Tcp.Socket.Close();
+                Udp.Socket.Close();
+
+                Debug.Log("Client disconnected");
+            }
         }
     }
 }

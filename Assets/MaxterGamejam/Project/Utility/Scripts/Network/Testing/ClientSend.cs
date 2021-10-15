@@ -27,19 +27,27 @@ namespace LOK1game.Tools.Networking
             using (Packet packet = new Packet((int)ClientPackets.WelcomeReceived))
             {
                 packet.Write(Client.Instance.LocalId);
-                packet.Write("LOK1");
+                packet.Write("Player" + Random.Range(0, 15));
 
                 SendTCPData(packet);
             }
         }
 
-        public static void UDPTestReceived()
+        public static void PlayerMovement(bool[] inputs, long tick)
         {
-            using(Packet packet = new Packet((int)ClientPackets.UdpTestReceived))
+            using (Packet packet = new Packet((int)ClientPackets.PlayerMovement))
             {
-                packet.Write("Received a UDP packet.");
+                packet.Write(inputs.Length);
 
-                SendUDPData(packet);
+                foreach (bool input in inputs)
+                {
+                    packet.Write(input);
+                }
+
+                packet.Write(NetworkGameManager.Players[Client.Instance.LocalId].transform.rotation);
+                packet.Write(tick);
+
+                SendTCPData(packet);
             }
         }
 
