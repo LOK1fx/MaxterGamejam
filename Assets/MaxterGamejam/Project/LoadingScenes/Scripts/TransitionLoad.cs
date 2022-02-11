@@ -10,8 +10,9 @@ namespace com.LOK1game.MaxterGamejam
     {
         public static TransitionLoad Instance { get; set; }
 
+        public static bool IsLoading { get; private set; } = false;
+
         private static bool _shouldPlayOpeningAnimation = false;
-        private static bool _loading = false;
 
         private Animator _animator;
         private AsyncOperation _loadingOperation;
@@ -25,16 +26,16 @@ namespace com.LOK1game.MaxterGamejam
             if (_shouldPlayOpeningAnimation)
             {
                 _animator.SetTrigger("SceneOpen");
-                _loading = false;
+                IsLoading = false;
                 _shouldPlayOpeningAnimation = false;
             }
         }
 
         public static void SwitchToScene(string sceneName)
         {
-            if(_loading) { return; }
+            if(IsLoading) { return; }
 
-            _loading = true;
+            IsLoading = true;
             Instance._animator.SetTrigger("SceneClose");
             Instance._loadingOperation = SceneManager.LoadSceneAsync(sceneName);
             Instance._loadingOperation.allowSceneActivation = false;

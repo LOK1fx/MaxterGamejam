@@ -29,27 +29,9 @@ namespace com.LOK1game.recode.Player
             BindInputs();
         }
 
-        protected virtual void BindInputs()
-        {
-            
-        }
+        protected abstract void BindInputs();
 
-        protected virtual void UnbindInput()
-        {
-
-        }
-
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting)
-            {
-                stream.SendNext(_cameraPosition.rotation);
-            }
-            else
-            {
-                _cameraPosition.rotation = (Quaternion)stream.ReceiveNext();
-            }
-        }
+        protected abstract void UnbindInput();
 
         public virtual void AddCameraPitch(float value)
         {

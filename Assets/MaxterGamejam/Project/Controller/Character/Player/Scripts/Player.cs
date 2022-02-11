@@ -73,11 +73,22 @@ namespace com.LOK1game.recode.Player
 
         private void Update()
         {
-            //need to CHANGE
-            if (Input.GetKeyDown(KeyCode.Plus))
+            if (!TransitionLoad.IsLoading)
             {
-                TransitionLoad.SwitchToScene("Menu");
+#if !UNITY_EDITOR
+                if(Input.GetKeyDown(KeyCode.Escape))
+                {
+                    TransitionLoad.SwitchToScene("Menu");
+                }
+#endif
+#if UNITY_EDITOR
+                if (Input.GetKeyDown(KeyCode.Plus))
+                {
+                    TransitionLoad.SwitchToScene("Menu");
+                }
+#endif
             }
+
 
             UpdateFX();
             PlayerMovement.SetAxisInput(_iAxis);
@@ -115,8 +126,6 @@ namespace com.LOK1game.recode.Player
 
         protected override void BindInputs()
         {
-            base.BindInputs();
-
             _input = PlayerInput.GetInput();
 
             _input.Player.Move.performed += ctx => _iAxis = ctx.ReadValue<Vector2>();
