@@ -50,17 +50,11 @@ namespace LOK1game.Tools.Networking
             {
                 ConnectToServer();
             }
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                Udp.Socket.Close();
-            }
         }
 
         private void FixedUpdate()
         {
             Tick++;
-
-            Debug.Log(Tick);
         }
 
         private void OnApplicationQuit()
@@ -311,7 +305,8 @@ namespace LOK1game.Tools.Networking
                 { (int)ServerPackets.Welcome, ClientHandle.Welcome },
                 { (int)ServerPackets.SpawnPlayer, ClientHandle.SpawnPlayer },
                 { (int)ServerPackets.PlayerPosition, ClientHandle.PlayerPosition },
-                { (int)ServerPackets.PlayerRotation, ClientHandle.PlayerRotation }
+                { (int)ServerPackets.PlayerRotation, ClientHandle.PlayerRotation },
+                { (int)ServerPackets.PlayerVelocity, ClientHandle.PlayerVelocity }
             };
 
             Debug.Log("Packets are initialezed");

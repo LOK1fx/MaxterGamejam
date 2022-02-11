@@ -13,6 +13,9 @@ namespace com.LOK1game.MaxterGamejam
         [SerializeField] private LineRenderer _trailPrefab;
         [SerializeField] protected Transform firePoint;
 
+        [SerializeField] private GameObject _projectile;
+        [SerializeField] private float _projectileShootForce;
+
         private ControlsAction _input;
 
         private void Start()
@@ -33,7 +36,7 @@ namespace com.LOK1game.MaxterGamejam
 
             var origin = MoveCamera.Instance.transform;
 
-            if (Physics.Raycast(origin.position, origin.forward, out RaycastHit hit, 10000f, gun.HitMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(origin.position, origin.forward, out RaycastHit hit, 100f, gun.HitMask, QueryTriggerInteraction.Ignore))
             {
                 if(hit.distance < gun.MaxShootDistance)
                 {
@@ -44,7 +47,7 @@ namespace com.LOK1game.MaxterGamejam
             }
             else
             {
-                SpawnTrail(origin.position + origin.forward * 1000f);
+                SpawnProjectile(origin);
             }
         }
 
@@ -59,6 +62,13 @@ namespace com.LOK1game.MaxterGamejam
 
                 Destroy(trail.gameObject, 0.2f);
             }
+        }
+
+        private void SpawnProjectile(Transform origin)
+        {
+            var projectile = Instantiate(_projectile, firePoint.position, origin.rotation);
+
+            projectile.GetComponent<Rigidbody>().AddForce(origin.forward * _projectileShootForce, ForceMode.Impulse);
         }
 
         protected virtual void Impact(RaycastHit hit)

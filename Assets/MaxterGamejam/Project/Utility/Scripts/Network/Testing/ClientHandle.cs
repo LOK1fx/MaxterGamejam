@@ -37,10 +37,10 @@ namespace LOK1game.Tools.Networking
         {
             var id = packet.ReadInt();
             var position = packet.ReadVector3();
+            var tick = packet.ReadLong();
 
-            //NetworkGameManager.Players[id].transform.position = position;
-
-            NetworkGameManager.SetPlayerPosition(id, position);
+            NetworkGameManager.Players[id].LastServerTick = tick;
+            NetworkGameManager.Players[id].ServerPosition = position;
 
             Debug.Log(position);
         }
@@ -51,6 +51,16 @@ namespace LOK1game.Tools.Networking
             var rotation = packet.ReadQuaternion();
 
             NetworkGameManager.Players[id].transform.rotation = rotation;
+        }
+
+        public static void PlayerVelocity(Packet packet)
+        {
+            var id = packet.ReadInt();
+            var velocity = packet.ReadVector3();
+            var tick = packet.ReadLong();
+
+            NetworkGameManager.Players[id].LastServerTick = tick;
+            NetworkGameManager.Players[id].ServerVelocity = velocity;
         }
     }
 }

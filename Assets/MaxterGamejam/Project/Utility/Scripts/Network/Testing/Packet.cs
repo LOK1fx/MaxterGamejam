@@ -11,7 +11,8 @@ namespace LOK1game.Tools.Networking
         Welcome = 1,
         SpawnPlayer,
         PlayerPosition,
-        PlayerRotation
+        PlayerRotation,
+        PlayerVelocity
     }
 
     /// <summary>Sent from client to server.</summary>

@@ -92,6 +92,8 @@ GameObject:
   - component: {fileID: 5759784917761966020}
   - component: {fileID: 5759784917761966021}
   - component: {fileID: 5266164692855730527}
+  - component: {fileID: 1589562504376565656}
+  - component: {fileID: 5588736507819776373}
   m_Layer: 0
   m_Name: LocalPlayer
   m_TagString: Untagged
@@ -130,6 +132,8 @@ MonoBehaviour:
   Id: 0
   Username: 
   ServerPosition: {x: 0, y: 0, z: 0}
+  ServerVelocity: {x: 0, y: 0, z: 0}
+  LastServerTick: 0
 --- !u!114 &5266164692855730527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,6 +146,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa85c73696c115740938b8a562a95c93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _movementData: {fileID: 11400000, guid: 2d0b5df267f9b3140806adfaad64b33a, type: 2}
+--- !u!54 &1589562504376565656
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5759784917761966022}
+  serializedVersion: 2
+  m_Mass: 5
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!136 &5588736507819776373
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5759784917761966022}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &8630994257246430126
 GameObject:
   m_ObjectHideFlags: 0

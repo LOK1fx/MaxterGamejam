@@ -18,16 +18,24 @@ namespace com.LOK1game.recode.Player
         {
             var normal = collision.contacts[0].normal;
 
-            if (IsWall(normal) && _player != null && !PlayerState.wallruning && _player.GetInputMoveAxis().normalized != null)
+            if (IsWall(normal) && _player != null && !PlayerState.wallruning)
             {
-                Vault();
+                if(_player.PlayerMovement.GetSpeed() <= 10 && _player.GetInputMoveAxis().normalized != Vector2.zero)
+                {
+                    var dir = _player.PlayerMovement.GetDirection(_player.GetInputMoveAxis()).normalized;
+
+                    Vault(dir);
+                }
+                else
+                {
+                    Vault(_player.PlayerMovement.Rigidbody.velocity.normalized);
+                }
             }
         }
 
-        private void Vault()
+        private void Vault(Vector3 dir)
         {  
-            var dir = _player.GetDirection(_player.GetInputMoveAxis()).normalized;
-            var maxVaultPos = transform.position + Vector3.up * _player.playerHeight;
+            var maxVaultPos = transform.position + Vector3.up * _player.PlayerHeight;
 
             if (Physics.Raycast(maxVaultPos, dir, 1.5f, _groundMask))
             {
@@ -50,7 +58,7 @@ namespace com.LOK1game.recode.Player
 
             transform.position = landPos;
 
-            Debug.DrawRay(landPos, Vector3.up * _player.playerHeight, Color.cyan, 1f);
+            Debug.DrawRay(landPos, Vector3.up * _player.PlayerHeight, Color.cyan, 1f);
         }
 
         private bool IsWall(Vector3 normal)

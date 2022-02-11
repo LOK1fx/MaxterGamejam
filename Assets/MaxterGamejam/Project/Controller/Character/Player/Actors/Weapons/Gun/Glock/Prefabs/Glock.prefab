@@ -356,6 +356,8 @@ MonoBehaviour:
   gun: {fileID: 11400000, guid: 3f967ae0c7ed7b849bd2f245e0e9b249, type: 2}
   _trailPrefab: {fileID: 6913919511136641360, guid: a165a9a45f0d85c45b26cdf0e690a18a, type: 3}
   firePoint: {fileID: 3805315082342329074}
+  _projectile: {fileID: 7316524123263515571, guid: c0c78bb208027894cb17ef6523003bcf, type: 3}
+  _projectileShootForce: 15
 --- !u!114 &8047313912844683072
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,6 +16,9 @@ public class TestNetworkPlayerCamera : MonoBehaviour
     {
         _verticalRotation = transform.localEulerAngles.x;
         _horizontalRotation = _player.transform.eulerAngles.y;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()

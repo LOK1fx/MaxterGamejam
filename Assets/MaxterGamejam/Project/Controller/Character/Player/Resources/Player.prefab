@@ -157,6 +157,25 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16640
   _proMode: 0
+--- !u!114 &335333376707564352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3600067676943768481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75fc3983d2f9f484b857dc9f35bf74ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _jumpCooldown: 0.1
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 16640
+  _maxSlideTime: 2
+  _movementData: {fileID: 11400000, guid: 2d0b5df267f9b3140806adfaad64b33a, type: 2}
+  _directionTransform: {fileID: 1257076221022952894}
 --- !u!114 &4303042459145595183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,13 +203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a34fa34a9b98e4db96b711ff987d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHeight: 2
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 16640
-  _movementData: {fileID: 11400000, guid: 2d0b5df267f9b3140806adfaad64b33a, type: 2}
+  PlayerHeight: 2
   _cameraPosition: {fileID: 6698367586170860760}
-  _directionTransform: {fileID: 1257076221022952894}
   _EDITOR_CHARACTER_MESH: {fileID: 5098299125502632847, guid: 8e2e524e66c7b284b9e8b8a57d6da553, type: 3}
   _maxHealth: 100
   _sensivity: 10
@@ -199,7 +213,6 @@ MonoBehaviour:
   _interactionMask:
     serializedVersion: 2
     m_Bits: 2080
-  _maxSlideTime: 0.7
 --- !u!205 &136690026624470885
 LODGroup:
   m_ObjectHideFlags: 0

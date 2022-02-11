@@ -2,7 +2,7 @@
 
 namespace LOK1game.Tools
 {
-    public class Character
+    public class CharacterMath
     {
         public struct MoveParams
         {

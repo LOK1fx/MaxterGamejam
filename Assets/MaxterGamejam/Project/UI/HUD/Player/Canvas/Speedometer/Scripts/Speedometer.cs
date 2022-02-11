@@ -13,7 +13,7 @@ namespace com.LOK1game.recode.UI  //LOK1game script behaviour😎💗
         {
             if(Player.Player.LocalPlayerInstance == null) { return; }
 
-            var speed = Player.Player.LocalPlayerInstance.GetSpeed();
+            var speed = Player.Player.LocalPlayerInstance.PlayerMovement.GetSpeed();
 
             text.text = $"UPS: {Mathf.RoundToInt(speed * 100f)}";
         }

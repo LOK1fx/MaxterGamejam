@@ -25,6 +25,11 @@ public class NetworkGameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        Physics.autoSimulation = false; //for handling featerues like client prediction
+    }
+
     public static void SetPlayerPosition(int id, Vector3 position)
     {
         Players[id].transform.position = position;

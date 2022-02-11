@@ -20,9 +20,9 @@ namespace com.LOK1game.recode.Player
 
         private void Update()
         {
-            if (Player.LocalPlayerInstance != null && Player.LocalPlayerInstance.GetSpeed() != 0f)
+            if (Player.LocalPlayerInstance != null && Player.LocalPlayerInstance.PlayerMovement.GetSpeed() != 0f)
             {
-                currentFov = baseFov * Player.LocalPlayerInstance.GetSpeed() / (baseFov / 11f);
+                currentFov = baseFov * Player.LocalPlayerInstance.PlayerMovement.GetSpeed() / (baseFov / 11f);
             }
             else
             {

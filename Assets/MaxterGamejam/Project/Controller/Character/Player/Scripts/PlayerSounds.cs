@@ -12,7 +12,7 @@ namespace com.LOK1game.recode.Player
         {
             base.Start();
 
-            _player.OnStartSlide += OnPlayerStartSlide;
+            _player.PlayerMovement.OnStartSlide += OnPlayerStartSlide;
         }
 
         private void OnPlayerStartSlide()

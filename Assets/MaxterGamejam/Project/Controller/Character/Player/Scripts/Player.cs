@@ -11,6 +11,7 @@ namespace com.LOK1game.recode.Player
 {
     public class Player : RigidbodyCharacterBase, IDamagable
     {
+
         public static Player LocalPlayerInstance { get; set; }
 
         public event Action<int> OnHealthChanged;
@@ -33,27 +34,20 @@ namespace com.LOK1game.recode.Player
         [SerializeField] private float _interactionDistance = 2f;
         [SerializeField] private LayerMask _interactionMask;
 
-        [Header("Sliding")]
-        [SerializeField] private float _maxSlideTime;
-
-        private float _currentSlideTime;
-
         [Space]
         private ControlsAction _input;
         private Vector2 _iAxis;
         private Vector3 _iLookDelta;
 
-        #region Events
-
-        public event Action OnStartSlide;
-
-        #endregion
+        public PlayerMovement PlayerMovement { get; private set; }
 
         protected override void Awake()
         {
             base.Awake();
 
             Health = _maxHealth;
+
+            PlayerMovement = GetComponent<PlayerMovement>();
 
             LocalPlayerInstance = this;
         }
@@ -67,6 +61,52 @@ namespace com.LOK1game.recode.Player
 
             _cameraPositionBasePos = _cameraPosition.localPosition;
             _cameraPositionCrouchPos = _cameraPositionBasePos + Vector3.down * 0.5f;
+
+            PlayerMovement.OnStartCrouch += OnStartCrouch;
+            PlayerMovement.OnStartSlide += OnStartSlide;
+            PlayerMovement.OnStopCrouch += OnStopCrouch;
+        }
+
+        private void Update()
+        {
+            //need to CHANGE
+            if (Input.GetKeyDown(KeyCode.Plus))
+            {
+                TransitionLoad.SwitchToScene("Menu");
+            }
+
+            UpdateFX();
+            PlayerMovement.SetAxisInput(_iAxis);
+        }
+
+        private void FixedUpdate()
+        {
+            PlayerMovement.Move();
+        }
+
+        private void LateUpdate()
+        {
+            Look();
+        }
+
+        private void OnStopCrouch()
+        {
+            _cameraPosition.localPosition = _cameraPositionBasePos;
+
+            MoveCamera.Instance.vaultOffset += _cameraPositionCrouchPos - _cameraPositionBasePos;
+
+            _slideTilt = 0f;
+        }
+
+        private void OnStartSlide()
+        {
+            _slideTilt = 5f;
+        }
+
+        private void OnStartCrouch()
+        {
+            MoveCamera.Instance.cameraPosition.localPosition = _cameraPositionCrouchPos;
+            MoveCamera.Instance.vaultOffset += _cameraPositionBasePos - _cameraPositionCrouchPos;
         }
 
         protected override void BindInputs()
@@ -78,181 +118,34 @@ namespace com.LOK1game.recode.Player
             _input.Player.Move.performed += ctx => _iAxis = ctx.ReadValue<Vector2>();
             _input.Player.Look.performed += ctx => _iLookDelta = ctx.ReadValue<Vector2>();
             _input.Player.Fire.performed += ctx => AddCameraPitch(1f);
-            _input.Player.Jump.performed += ctx => Jump();
+            _input.Player.Jump.performed += ctx => PlayerMovement.Jump();
 
             _input.Player.Interact.performed += Interact;
 
-            _input.Player.Crouch.started += ctx => LocalStartCrouch();
-            _input.Player.Crouch.canceled += ctx => LocalStopCrouch();
+            _input.Player.Crouch.started += ctx => PlayerMovement.StartCrouch();
+            _input.Player.Crouch.canceled += ctx => PlayerMovement.StopCrouch();
 
             _input.Player.Sprint.performed += ctx => PlayerState.sprinting = !PlayerState.sprinting;
 
             _sensivity = Settings.GetSensivity();
         }
-
-        protected override void Update()
-        {
-            base.Update();
-
-            if (PlayerState.sliding && onGround)
-            {
-                _currentSlideTime += Time.deltaTime;
-            }
-            if (_currentSlideTime >= _maxSlideTime)
-            {
-                rb.velocity = Vector3.zero;
-
-                LocalStopCrouch();
-                LocalStartCrouch();
-
-                _currentSlideTime = 0f;
-            }
-
-            if(Input.GetKeyDown(KeyCode.Escape))
-            {
-                TransitionLoad.SwitchToScene("Menu");
-            }
-
-            UpdateFX();
-        }
+        
 
         private void UpdateFX()
         {
             _currentSlideTilt = Mathf.Lerp(_currentSlideTilt, _slideTilt, Time.deltaTime * _slideTiltSmooth);
         }
 
-        protected override void Movement()
+        private void Look()
         {
-            base.Movement();
-
-            if (!PlayerState.inTransport)
-            {
-                Vector3 velocity;
-
-                var moveParams = new Character.MoveParams(GetNonNormDirection(_iAxis), rb.velocity);
-                var slopeMoveParams = new Character.MoveParams(GetSlopeDirection(_iAxis), rb.velocity);
-                var slideMoveParams = new Character.MoveParams(Vector3.zero, rb.velocity);
-
-                if (onGround && !onSlope && !PlayerState.sliding)
-                {
-                    velocity = MoveGround(moveParams, PlayerState.sprinting, PlayerState.crouching);
-                }
-                else if (onGround && onSlope && !PlayerState.sliding)
-                {
-                    velocity = MoveGround(slopeMoveParams, PlayerState.sprinting, PlayerState.crouching);
-                    rb.AddForce(GetSlopeDirection(_iAxis).normalized * 8f, ForceMode.Acceleration);
-                }
-                else if (PlayerState.sliding)
-                {
-                    velocity = MoveAir(slideMoveParams);
-                }
-                else
-                {
-                    velocity = MoveAir(moveParams);
-                }
-
-                rb.velocity = velocity;
-            }
-        }
-
-        protected override void Land()
-        {
-            base.Land();
-
-            if (_input.Player.Jump.phase == InputActionPhase.Started)
-            {
-                Jump();
-            }
-        }
-
-        private void LocalStartCrouch()
-        {
-            StartCrouch();
-        }
-
-        private void LocalStopCrouch()
-        {
-            StopCrouch();
-        }
-
-        private void StartCrouch()
-        {
-            if (PlayerState.wallruning) { return; }
-
-            _currentSlideTime = 0f;
-
-            playerHeight = 1.5f;
-
-            playerCollider.center = Vector3.up * 0.75f;
-            playerCollider.height = playerHeight;
-
-            MoveCamera.Instance.cameraPosition.localPosition = _cameraPositionCrouchPos;
-            MoveCamera.Instance.vaultOffset += _cameraPositionBasePos - _cameraPositionCrouchPos;
-
-            if (rb.velocity.magnitude > 6f)
-            {
-                StartSlide();
-            }
-            else
-            {
-                PlayerState.crouching = true;
-            }
-        }
-
-        private void StartSlide()
-        {
-            _currentSlideTime = 0f;
-
-            var dir = GetDirection(_iAxis);
-
-            if (onGround)
-            {
-                rb.AddForce(dir * 40f, ForceMode.Impulse);
-            }
-            else
-            {
-                rb.AddForce(dir * 10f, ForceMode.Impulse);
-            }
-
-            _slideTilt = 5f;
-
-            OnStartSlide?.Invoke();
-
-            PlayerState.sliding = true;
-        }
-
-        public void StopCrouch()
-        {
-            if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit, 2f, groundMask, QueryTriggerInteraction.Ignore))
-            {
-                return;
-            }
-
-            playerHeight = 2f;
-
-            playerCollider.height = playerHeight;
-            playerCollider.center = Vector3.up;
-
-            _cameraPosition.localPosition = _cameraPositionBasePos;
-
-            MoveCamera.Instance.vaultOffset += _cameraPositionCrouchPos - _cameraPositionBasePos;
-
-            _slideTilt = 0f;
-
-            PlayerState.sliding = false;
-            PlayerState.crouching = false;
-        }
-
-        protected override void Look()
-        {
-            base.Look();
-
             _yRotation += _iLookDelta.x * _sensivity * Time.smoothDeltaTime;
 
             AddCameraPitch(_iLookDelta.y * _sensivity * Time.smoothDeltaTime);
 
-            _directionTransform.rotation = Quaternion.Euler(0f, _yRotation, 0f);
-            _cameraPosition.localRotation = Quaternion.Euler(_xRotation, _directionTransform.localEulerAngles.y, wallrunTilt + _currentSlideTilt);
+            var directionTransform = PlayerMovement.GetDirectionTransform();
+
+            directionTransform.rotation = Quaternion.Euler(0f, _yRotation, 0f);
+            _cameraPosition.localRotation = Quaternion.Euler(_xRotation, directionTransform.localEulerAngles.y, wallrunTilt + _currentSlideTilt);
         }
 
         private void Interact(InputAction.CallbackContext context)

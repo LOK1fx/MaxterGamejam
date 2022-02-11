@@ -37,7 +37,7 @@ namespace com.LOK1game.recode.Player
         {
             _player = GetComponent<Player>();
 
-            _directionTransform = _player.GetDirectionTransform();
+            _directionTransform = _player.PlayerMovement.GetDirectionTransform();
 
             _input = _player.GetInputClass();
             InitInput();
@@ -136,7 +136,7 @@ namespace com.LOK1game.recode.Player
 
         private void JumpFromWall(InputAction.CallbackContext context)
         {
-            if (_player.CanJump() && PlayerState.wallruning)
+            if (_player.PlayerMovement.CanJump() && PlayerState.wallruning)
             {
                 Vector3 dir;
 
@@ -152,7 +152,7 @@ namespace com.LOK1game.recode.Player
                 _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
                 _rb.AddForce(dir * 36f, ForceMode.Impulse);
 
-                _player.ResetJumpCooldown();
+                _player.PlayerMovement.ResetJumpCooldown();
             }
         }
 

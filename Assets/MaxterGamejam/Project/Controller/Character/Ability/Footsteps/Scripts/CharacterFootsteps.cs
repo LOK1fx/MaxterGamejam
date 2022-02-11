@@ -17,7 +17,7 @@ namespace com.LOK1game.recode.Player
         {
             _player = GetComponent<Player>();
 
-            _player.OnLand += OnPlayerLand;
+            _player.PlayerMovement.OnLand += OnPlayerLand;
 
             _lastFootstepPos = transform.position;
         }
@@ -71,7 +71,7 @@ namespace com.LOK1game.recode.Player
 
         private void OnDestroy()
         {
-            _player.OnLand -= OnPlayerLand;
+            _player.PlayerMovement.OnLand -= OnPlayerLand;
         }
     }
 }
