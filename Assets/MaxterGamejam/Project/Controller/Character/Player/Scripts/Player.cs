@@ -11,10 +11,14 @@ namespace com.LOK1game.recode.Player
 {
     public class Player : RigidbodyCharacterBase, IDamagable
     {
-
-        public static Player LocalPlayerInstance { get; set; }
+        #region
 
         public event Action<int> OnHealthChanged;
+        public event Action OnDie;
+
+        #endregion
+
+        public static Player LocalPlayerInstance { get; set; }
 
         public int Health { get; private set; }
 
@@ -117,7 +121,6 @@ namespace com.LOK1game.recode.Player
 
             _input.Player.Move.performed += ctx => _iAxis = ctx.ReadValue<Vector2>();
             _input.Player.Look.performed += ctx => _iLookDelta = ctx.ReadValue<Vector2>();
-            _input.Player.Fire.performed += ctx => AddCameraPitch(1f);
             _input.Player.Jump.performed += ctx => PlayerMovement.Jump();
 
             _input.Player.Interact.performed += Interact;
@@ -130,6 +133,19 @@ namespace com.LOK1game.recode.Player
             _sensivity = Settings.GetSensivity();
         }
         
+        protected override void UnbindInput()
+        {
+            _input.Player.Move.performed -= ctx => _iAxis = ctx.ReadValue<Vector2>();
+            _input.Player.Look.performed -= ctx => _iLookDelta = ctx.ReadValue<Vector2>();
+            _input.Player.Jump.performed -= ctx => PlayerMovement.Jump();
+
+            _input.Player.Interact.performed -= Interact;
+
+            _input.Player.Crouch.started -= ctx => PlayerMovement.StartCrouch();
+            _input.Player.Crouch.canceled -= ctx => PlayerMovement.StopCrouch();
+
+            _input.Player.Sprint.performed -= ctx => PlayerState.sprinting = !PlayerState.sprinting;
+        }
 
         private void UpdateFX()
         {
@@ -179,6 +195,36 @@ namespace com.LOK1game.recode.Player
             }
         }
 
+        public void TakePointDamage(object sender, int damage, Vector3 dir, object[] info = null)
+        {
+            BaseTakeDamage(sender, damage, dir);
+        }
+
+        public void TakeRadialDamage(object sender, int damage, object[] info = null)
+        {
+            BaseTakeDamage(sender, damage, Vector3.zero);
+        }
+
+        private void BaseTakeDamage(object sender, int damage, Vector3 dir)
+        {
+            Health -= damage;
+            Health = Mathf.Clamp(Health, 0, _maxHealth);
+
+            if (Health == 0)
+            {
+                Death();
+            }
+
+            OnHealthChanged?.Invoke(Health);
+        }
+
+        private void Death()
+        {
+            TransitionLoad.SwitchToScene(SceneManager.GetActiveScene().name);
+
+            OnDie?.Invoke();
+        }
+
         public Vector2 GetInputMoveAxis()
         {
             return _iAxis;
@@ -189,27 +235,15 @@ namespace com.LOK1game.recode.Player
             return _input;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+
             LocalPlayerInstance = null;
-        }
 
-        public void TakePointDamage(object sender, int damage, Vector3 dir, object[] info = null)
-        {
-            
-        }
-
-        public void TakeRadialDamage(object sender, int damage, object[] info = null)
-        {
-            Health -= damage;
-            Health = Mathf.Clamp(Health, 0, _maxHealth);
-
-            if (Health == 0)
-            {
-                TransitionLoad.SwitchToScene(SceneManager.GetActiveScene().name);
-            }  
-
-            OnHealthChanged?.Invoke(Health);
+            PlayerMovement.OnStartCrouch -= OnStartCrouch;
+            PlayerMovement.OnStartSlide -= OnStartSlide;
+            PlayerMovement.OnStopCrouch -= OnStopCrouch;
         }
     }
 }

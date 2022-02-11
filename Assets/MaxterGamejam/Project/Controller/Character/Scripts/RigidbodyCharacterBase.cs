@@ -21,15 +21,22 @@ namespace com.LOK1game.recode.Player
 
         protected virtual void Awake()
         {
+            if (!PlayerInput.initialized)
+            {
+                PlayerInput.Init();
+            }
+
             BindInputs();
         }
 
         protected virtual void BindInputs()
         {
-            if (!PlayerInput.initialized)
-            {
-                PlayerInput.Init();
-            }
+            
+        }
+
+        protected virtual void UnbindInput()
+        {
+
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -55,6 +62,11 @@ namespace com.LOK1game.recode.Player
         {
             return _cameraPosition;
         }    
+
+        protected virtual void OnDestroy()
+        {
+            UnbindInput();
+        }
 
 #if UNITY_EDITOR
 
