@@ -14,7 +14,7 @@ namespace LOK1game
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            transform.GetChild(0).GetComponent<Image>().sprite = _assets.Background;
+            //transform.GetChild(0).GetComponent<Image>().sprite = _assets.Background;
         }
 
         public void Quit()

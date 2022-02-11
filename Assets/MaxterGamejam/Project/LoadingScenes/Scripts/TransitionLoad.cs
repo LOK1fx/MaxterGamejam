@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
+using LOK1game.Game.Events;
 
 namespace com.LOK1game.MaxterGamejam
 {
@@ -34,6 +32,8 @@ namespace com.LOK1game.MaxterGamejam
         public static void SwitchToScene(string sceneName)
         {
             if(IsLoading) { return; }
+
+            EventManager.Broadcast(Events.OnLevelStartChanged);
 
             IsLoading = true;
             Instance._animator.SetTrigger("SceneClose");

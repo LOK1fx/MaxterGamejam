@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using LOK1game.Tools;
 using LOK1game;
+using LOK1game.Game.Events;
 using System.Collections;
 using com.LOK1game.MaxterGamejam;
 using UnityEngine.SceneManagement;
@@ -73,6 +73,8 @@ namespace com.LOK1game.recode.Player
             PlayerMovement.OnStartCrouch += OnStartCrouch;
             PlayerMovement.OnStartSlide += OnStartSlide;
             PlayerMovement.OnStopCrouch += OnStopCrouch;
+
+            EventManager.AddListener<OnLevelStartChangeEvent>(UnbindAll);
 
             CanMove = true;
         }
@@ -253,13 +255,22 @@ namespace com.LOK1game.recode.Player
 
         protected override void OnDestroy()
         {
-            base.OnDestroy();
+            UnbindAll(null);
+
+            EventManager.RemoveListener<OnLevelStartChangeEvent>(UnbindAll);
+        }
+
+        private void UnbindAll(GameEvent evt)
+        {
+            UnbindInput();
 
             LocalPlayerInstance = null;
 
             PlayerMovement.OnStartCrouch -= OnStartCrouch;
             PlayerMovement.OnStartSlide -= OnStartSlide;
             PlayerMovement.OnStopCrouch -= OnStopCrouch;
+
+            Debug.Log("All binds are unbind!");
         }
     }
 }

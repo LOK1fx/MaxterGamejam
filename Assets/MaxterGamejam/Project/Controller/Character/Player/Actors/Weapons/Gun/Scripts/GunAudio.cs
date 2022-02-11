@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using LOK1game.Game.Events;
 using UnityEngine;
 
 namespace com.LOK1game.MaxterGamejam
@@ -20,6 +19,8 @@ namespace com.LOK1game.MaxterGamejam
             _gun.OnShoot += OnGunShoot;
 
             _gunData = _gun.GetGunProperties();
+
+            EventManager.AddListener<OnLevelStartChangeEvent>(UnbindEvents);
         }
 
         private void OnGunShoot()
@@ -31,6 +32,11 @@ namespace com.LOK1game.MaxterGamejam
         }
 
         private void OnDestroy()
+        {
+            _gun.OnShoot -= OnGunShoot;
+        }
+
+        private void UnbindEvents(OnLevelStartChangeEvent evt)
         {
             _gun.OnShoot -= OnGunShoot;
         }
