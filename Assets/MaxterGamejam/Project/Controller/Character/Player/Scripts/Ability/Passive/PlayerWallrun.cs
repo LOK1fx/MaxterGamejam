@@ -82,7 +82,7 @@ namespace com.LOK1game.recode.Player
 
         private void UpdateCameraFx()
         {
-            if (PlayerState.wallruning)
+            if (PlayerState.Wallruning)
             {
                 if (_wallOnLeft)
                 {
@@ -136,7 +136,7 @@ namespace com.LOK1game.recode.Player
 
         private void JumpFromWall(InputAction.CallbackContext context)
         {
-            if (_player.PlayerMovement.CanJump() && PlayerState.wallruning)
+            if (_player.PlayerMovement.CanJump() && PlayerState.Wallruning)
             {
                 Vector3 dir;
 
@@ -158,7 +158,7 @@ namespace com.LOK1game.recode.Player
 
         private void StartWallrun()
         {
-            PlayerState.wallruning = true;
+            PlayerState.Wallruning = true;
 
             _rb.useGravity = false;
 
@@ -168,7 +168,7 @@ namespace com.LOK1game.recode.Player
 
         private void StopWallrun()
         {
-            PlayerState.wallruning = false;
+            PlayerState.Wallruning = false;
 
             _rb.useGravity = true;
         }
@@ -177,7 +177,7 @@ namespace com.LOK1game.recode.Player
         {
             if (_proMode)
             {
-                if (_iAxis.x == 0 && !PlayerState.sliding && !PlayerState.crouching) { return false; }
+                if (_iAxis.x == 0 && !PlayerState.Sliding && !PlayerState.Crouching) { return false; }
             }
 
             Debug.DrawRay(transform.position + Vector3.up, Vector3.down * _minJumpHeight, Color.green);

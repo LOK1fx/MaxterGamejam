@@ -24,7 +24,7 @@ namespace com.LOK1game.recode.Player
 
         private void Update()
         {
-            if(Vector3.Distance(transform.position, _lastFootstepPos) > 2.5f && PlayerState.onGround && !PlayerState.sliding)
+            if(Vector3.Distance(transform.position, _lastFootstepPos) > 2.5f && PlayerState.OnGround && !PlayerState.Sliding)
             {
                 Footstep();
             }

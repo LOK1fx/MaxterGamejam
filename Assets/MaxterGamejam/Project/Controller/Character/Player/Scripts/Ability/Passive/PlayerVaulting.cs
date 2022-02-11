@@ -18,7 +18,7 @@ namespace com.LOK1game.recode.Player
         {
             var normal = collision.contacts[0].normal;
 
-            if (IsWall(normal) && _player != null && !PlayerState.wallruning)
+            if (IsWall(normal) && _player != null && !PlayerState.Wallruning)
             {
                 if(_player.PlayerMovement.GetSpeed() <= 10 && _player.GetInputMoveAxis().normalized != Vector2.zero)
                 {

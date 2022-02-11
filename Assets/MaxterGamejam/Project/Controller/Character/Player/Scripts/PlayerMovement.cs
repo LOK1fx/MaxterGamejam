@@ -63,7 +63,7 @@ namespace com.LOK1game.recode.Player
             UpdateCooldowns();
             Checks();
 
-            if (PlayerState.sliding && PlayerState.onGround)
+            if (PlayerState.Sliding && PlayerState.OnGround)
             {
                 _currentSlideTime += Time.deltaTime;
             }
@@ -90,7 +90,7 @@ namespace com.LOK1game.recode.Player
                 Land();
             }
 
-            if (!PlayerState.inTransport)
+            if (!PlayerState.InTransport)
             {
                 Vector3 velocity;
 
@@ -98,16 +98,16 @@ namespace com.LOK1game.recode.Player
                 var slopeMoveParams = new CharacterMath.MoveParams(GetSlopeDirection(_iAxis), Rigidbody.velocity);
                 var slideMoveParams = new CharacterMath.MoveParams(Vector3.zero, Rigidbody.velocity);
 
-                if (onGround && !onSlope && !PlayerState.sliding)
+                if (onGround && !onSlope && !PlayerState.Sliding)
                 {
-                    velocity = MoveGround(moveParams, PlayerState.sprinting, PlayerState.crouching);
+                    velocity = MoveGround(moveParams, PlayerState.Sprinting, PlayerState.Crouching);
                 }
-                else if (onGround && onSlope && !PlayerState.sliding)
+                else if (onGround && onSlope && !PlayerState.Sliding)
                 {
-                    velocity = MoveGround(slopeMoveParams, PlayerState.sprinting, PlayerState.crouching);
+                    velocity = MoveGround(slopeMoveParams, PlayerState.Sprinting, PlayerState.Crouching);
                     Rigidbody.AddForce(GetSlopeDirection(_iAxis).normalized * 8f, ForceMode.Acceleration);
                 }
-                else if (PlayerState.sliding)
+                else if (PlayerState.Sliding)
                 {
                     velocity = MoveAir(slideMoveParams);
                 }
@@ -139,7 +139,7 @@ namespace com.LOK1game.recode.Player
 
         public void StartCrouch()
         {
-            if (PlayerState.wallruning) { return; }
+            if (PlayerState.Wallruning) { return; }
 
             _currentSlideTime = 0f;
 
@@ -154,7 +154,7 @@ namespace com.LOK1game.recode.Player
             }
             else
             {
-                PlayerState.crouching = true;
+                PlayerState.Crouching = true;
             }
 
             OnStartCrouch?.Invoke();
@@ -177,7 +177,7 @@ namespace com.LOK1game.recode.Player
 
             OnStartSlide?.Invoke();
 
-            PlayerState.sliding = true;
+            PlayerState.Sliding = true;
         }
 
         public void StopCrouch()
@@ -192,15 +192,15 @@ namespace com.LOK1game.recode.Player
             _playerCollider.height = _player.PlayerHeight;
             _playerCollider.center = Vector3.up;
 
-            PlayerState.sliding = false;
-            PlayerState.crouching = false;
+            PlayerState.Sliding = false;
+            PlayerState.Crouching = false;
 
             OnStopCrouch?.Invoke();
         }
 
         public bool CanJump()
         {
-            if (_currentJumpCooldown <= 0 && !PlayerState.inTransport)
+            if (_currentJumpCooldown <= 0 && !PlayerState.InTransport)
             {
                 return true;
             }
@@ -257,7 +257,7 @@ namespace com.LOK1game.recode.Player
                 onGround = false;
             }
 
-            PlayerState.onGround = onGround;
+            PlayerState.OnGround = onGround;
         }
 
         private bool OnSlope()

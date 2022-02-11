@@ -22,6 +22,8 @@ namespace com.LOK1game.recode.Player
 
         public int Health { get; private set; }
 
+        [HideInInspector] public bool CanMove;
+
         [SerializeField] private int _maxHealth = 100;
 
         [Header("Camera")]
@@ -58,6 +60,8 @@ namespace com.LOK1game.recode.Player
 
         private void Start()
         {
+            PlayerState.Crouching = false;
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -69,34 +73,37 @@ namespace com.LOK1game.recode.Player
             PlayerMovement.OnStartCrouch += OnStartCrouch;
             PlayerMovement.OnStartSlide += OnStartSlide;
             PlayerMovement.OnStopCrouch += OnStopCrouch;
+
+            CanMove = true;
         }
 
         private void Update()
         {
-            if (!TransitionLoad.IsLoading)
-            {
+            PlayerMovement.SetAxisInput(_iAxis);
+
 #if !UNITY_EDITOR
-                if(Input.GetKeyDown(KeyCode.Escape))
-                {
-                    TransitionLoad.SwitchToScene("Menu");
-                }
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                TransitionLoad.SwitchToScene("Menu");
+            }
 #endif
 #if UNITY_EDITOR
-                if (Input.GetKeyDown(KeyCode.Plus))
-                {
-                    TransitionLoad.SwitchToScene("Menu");
-                }
-#endif
+            if (Input.GetKeyDown(KeyCode.Plus))
+            {
+                TransitionLoad.SwitchToScene("Menu");
             }
+#endif
 
 
             UpdateFX();
-            PlayerMovement.SetAxisInput(_iAxis);
         }
 
         private void FixedUpdate()
         {
-            PlayerMovement.Move();
+            if(CanMove)
+            {
+                PlayerMovement.Move();
+            }
         }
 
         private void LateUpdate()
@@ -137,7 +144,7 @@ namespace com.LOK1game.recode.Player
             _input.Player.Crouch.started += ctx => PlayerMovement.StartCrouch();
             _input.Player.Crouch.canceled += ctx => PlayerMovement.StopCrouch();
 
-            _input.Player.Sprint.performed += ctx => PlayerState.sprinting = !PlayerState.sprinting;
+            _input.Player.Sprint.performed += ctx => PlayerState.Sprinting = !PlayerState.Sprinting;
 
             _sensivity = Settings.GetSensivity();
         }
@@ -153,7 +160,7 @@ namespace com.LOK1game.recode.Player
             _input.Player.Crouch.started -= ctx => PlayerMovement.StartCrouch();
             _input.Player.Crouch.canceled -= ctx => PlayerMovement.StopCrouch();
 
-            _input.Player.Sprint.performed -= ctx => PlayerState.sprinting = !PlayerState.sprinting;
+            _input.Player.Sprint.performed -= ctx => PlayerState.Sprinting = !PlayerState.Sprinting;
         }
 
         private void UpdateFX()
